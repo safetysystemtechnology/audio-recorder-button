@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_centerInParent="true"
+        android:layout_width="130dp"
+        android:layout_height="70dp">
+
+        <RelativeLayout
+            android:id="@+id/pai_cron"
+            android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_height="30dp">
+
+            <Chronometer
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_below="@+id/pai_cron"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/image_view"
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_fileviewer" />
+
+            <ImageButton
+                android:id="@+id/image_remove"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/shape_circle"
+                android:layout_centerVertical="true"
+                android:layout_width="25dp"
+                android:layout_height="25dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

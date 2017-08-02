@@ -9,8 +9,9 @@
     <br.com.safety.audio_recorder.AudioRecordButton
         android:id="@+id/audio_record_button"
         android:layout_centerInParent="true"
-        android:layout_width="80dp"
+        android:layout_width="150dp"
         android:layout_height="80dp">
     </br.com.safety.audio_recorder.AudioRecordButton>
+
 
 </RelativeLayout>
