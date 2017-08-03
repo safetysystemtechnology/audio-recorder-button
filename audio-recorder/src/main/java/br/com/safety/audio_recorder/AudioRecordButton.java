@@ -5,18 +5,14 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,7 +21,9 @@ import android.widget.RelativeLayout;
 public class AudioRecordButton extends RelativeLayout {
 
     private static String DEFAULT_FILE_NAME_AUDIO = "/audio.ogg";
-    private static String DEFAULT_SAVE_FOLDER_NAME = "/Music";
+    private static int DEFAULT_ICON_SIZE = 90;
+    private static int DEFAULT_REMOVE_ICON_SIZE = 50;
+
 
     private Context mContext;
 
@@ -42,6 +40,9 @@ public class AudioRecordButton extends RelativeLayout {
 
     private float initialX;
     private float initialXImageButton;
+    private float initialTouchX;
+
+    private WindowManager.LayoutParams params;
 
     public AudioRecordButton(Context context) {
         super(context);
@@ -65,32 +66,41 @@ public class AudioRecordButton extends RelativeLayout {
         setupLayout(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    WindowManager.LayoutParams getViewParams() {
+        return this.params;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                initialTouchX = event.getRawX();
+
                 changeImageView();
                 mLayoutTimer.setVisibility(VISIBLE);
                 mImageButton.setVisibility(VISIBLE);
                 startRecord();
                 return true;
             case MotionEvent.ACTION_MOVE:
-
-                if (initialX == 0) {
-                    initialX = this.mImageView.getX();
+                if (this.initialX == 0) {
+                    this.initialX = this.mImageView.getX() - 10;
                 }
 
-                this.initialXImageButton = this.mImageView.getLeft();
+                this.mImageView.setX(event.getX() - this.mImageView.getWidth() / 2);
 
-                if (event.getX() < initialX + this.mImageView.getWidth() / 2) {
-                    this.mImageView.setX(event.getX() - mImageView.getWidth() / 2);
-                    this.mImageButton.setAlpha(0.9f);
+                if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 10) {
+                    this.mImageView.setX(0);
+                    this.changeSizeToRemove();
+                } else if (this.mImageView.getX() > DEFAULT_REMOVE_ICON_SIZE + DEFAULT_REMOVE_ICON_SIZE / 2) {
+                    this.unRevealSizeToRemove();
                 }
 
-                if (this.mImageView.getX() < getX()) {
-                    Log.d("x", "imageView" + this.mImageView.getX());
-                    Log.d("collide?", "collide?");
+                if (this.mImageView.getX() <= 0) {
+                    this.mImageButton.setX(0);
+                }
+
+                if (this.mImageView.getX() + this.mImageView.getWidth() / 2 > getWidth() / 2) {
+                    this.mImageView.setX(this.initialX + 10);
                 }
 
                 break;
@@ -99,7 +109,13 @@ public class AudioRecordButton extends RelativeLayout {
                 unRevealImageView();
                 mLayoutTimer.setVisibility(INVISIBLE);
                 mImageButton.setVisibility(INVISIBLE);
-                stopRecord();
+
+                if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 10) {
+                    stopRecord(true);
+                } else {
+                    stopRecord(false);
+                }
+
                 break;
             default:
                 return false;
@@ -107,25 +123,10 @@ public class AudioRecordButton extends RelativeLayout {
         return true;
     }
 
-    private int getRelativeLeft(View myView) {
-        if (myView.getParent() == myView.getRootView())
-            return myView.getLeft();
-        else
-            return myView.getLeft() + getRelativeLeft((View) myView.getParent());
-    }
-
-    private int getRelativeTop(View myView) {
-        if (myView.getParent() == myView.getRootView())
-            return myView.getTop();
-        else
-            return myView.getTop() + getRelativeTop((View) myView.getParent());
-    }
-
-
     private void moveImageToBack() {
         this.mImageButton.setAlpha(0.5f);
         final ValueAnimator positionAnimator =
-                ValueAnimator.ofFloat(this.mImageView.getX(), 0);
+                ValueAnimator.ofFloat(this.mImageView.getX(), this.initialX);
 
         positionAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         positionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -133,6 +134,9 @@ public class AudioRecordButton extends RelativeLayout {
             public void onAnimationUpdate(ValueAnimator animation) {
                 float x = (Float) animation.getAnimatedValue();
                 mImageView.setX(x);
+                if (mImageView.getX() > DEFAULT_REMOVE_ICON_SIZE){
+                    unRevealSizeToRemove();
+                }
             }
         });
 
@@ -149,6 +153,11 @@ public class AudioRecordButton extends RelativeLayout {
                 }
 
                 @Override
+                public void onCancel() {
+                    mAudioListener.onCancel();
+                }
+
+                @Override
                 public void onError(Exception e) {
                     mAudioListener.onError(e);
                 }
@@ -157,14 +166,13 @@ public class AudioRecordButton extends RelativeLayout {
             this.mAudioRecording =
                     new AudioRecording(this.mContext)
                             .setNameFile(DEFAULT_FILE_NAME_AUDIO)
-                            .setSaveFolder(DEFAULT_SAVE_FOLDER_NAME)
                             .start(audioListener);
         }
     }
 
-    private void stopRecord() {
+    private void stopRecord(Boolean cancel) {
         if (mAudioListener != null) {
-            this.mAudioRecording.stop();
+            this.mAudioRecording.stop(cancel);
         }
     }
 
@@ -185,7 +193,7 @@ public class AudioRecordButton extends RelativeLayout {
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                30);
+                35);
 
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
@@ -226,10 +234,10 @@ public class AudioRecordButton extends RelativeLayout {
         this.mImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_fileviewer));
 
         LayoutParams layoutParamImage = new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+                DEFAULT_ICON_SIZE,
+                DEFAULT_ICON_SIZE);
 
-        layoutParamImage.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+        layoutParamImage.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         this.mLayoutVoice.addView(this.mImageView, layoutParamImage);
 
         /**
@@ -238,11 +246,13 @@ public class AudioRecordButton extends RelativeLayout {
         this.mImageButton = new ImageButton(context);
         this.mImageButton.setVisibility(INVISIBLE);
         this.mImageButton.setAlpha(0.5f);
+        this.mImageButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_close));
         this.mImageButton.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_circle));
+        this.mImageButton.setColorFilter(Color.WHITE);
 
         RelativeLayout.LayoutParams layoutParamImageButton = new RelativeLayout.LayoutParams(
-                25,
-                25
+                DEFAULT_REMOVE_ICON_SIZE,
+                DEFAULT_REMOVE_ICON_SIZE
         );
         layoutParamImageButton.setMargins(0, 0, 4, 0);
         layoutParamImageButton.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
@@ -271,6 +281,18 @@ public class AudioRecordButton extends RelativeLayout {
         this.mImageView.getLayoutParams().width = this.mImageView.getWidth() + 30;
         this.mImageView.getLayoutParams().height = this.mImageView.getHeight() + 30;
         this.mImageView.requestLayout();
+    }
+
+    public void changeSizeToRemove() {
+        this.mImageButton.getLayoutParams().width = this.mImageView.getWidth();
+        this.mImageButton.getLayoutParams().height = this.mImageView.getHeight();
+        this.mImageButton.requestLayout();
+    }
+
+    public void unRevealSizeToRemove() {
+        this.mImageButton.getLayoutParams().width = DEFAULT_REMOVE_ICON_SIZE;
+        this.mImageButton.getLayoutParams().height = DEFAULT_REMOVE_ICON_SIZE;
+        this.mImageButton.requestLayout();
     }
 
     public void unRevealImageView() {
