@@ -18,23 +18,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import java.util.UUID;
+
 public class AudioRecordButton extends RelativeLayout {
 
-    private static String DEFAULT_FILE_NAME_AUDIO = "/audio.ogg";
     private static int DEFAULT_ICON_SIZE = 90;
     private static int DEFAULT_REMOVE_ICON_SIZE = 50;
 
-
     private Context mContext;
-
     private RelativeLayout mLayoutTimer;
     private RelativeLayout mLayoutVoice;
 
     private Chronometer mChronometer;
-
     private ImageView mImageView;
     private ImageButton mImageButton;
-
     private AudioListener mAudioListener;
     private AudioRecording mAudioRecording;
 
@@ -165,7 +162,7 @@ public class AudioRecordButton extends RelativeLayout {
 
             this.mAudioRecording =
                     new AudioRecording(this.mContext)
-                            .setNameFile(DEFAULT_FILE_NAME_AUDIO)
+                            .setNameFile("/" + UUID.randomUUID() + "-audio.ogg")
                             .start(audioListener);
         }
     }
