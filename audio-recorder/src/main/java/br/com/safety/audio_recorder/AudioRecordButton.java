@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -35,7 +36,7 @@ public class AudioRecordButton extends RelativeLayout {
     private AudioListener mAudioListener;
     private AudioRecording mAudioRecording;
 
-    private float initialX;
+    private float initialX = 0;
     private float initialXImageButton;
     private float initialTouchX;
 
@@ -85,7 +86,7 @@ public class AudioRecordButton extends RelativeLayout {
 
                 this.mImageView.setX(event.getX() - this.mImageView.getWidth() / 2);
 
-                if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 10) {
+                if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 20) {
                     this.mImageView.setX(0);
                     this.changeSizeToRemove();
                 } else if (this.mImageView.getX() > DEFAULT_REMOVE_ICON_SIZE + DEFAULT_REMOVE_ICON_SIZE / 2) {
@@ -228,8 +229,8 @@ public class AudioRecordButton extends RelativeLayout {
          * Image voice
          */
         this.mImageView = new ImageView(context);
-        this.mImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_fileviewer));
-
+//        this.mImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_fileviewer));
+        this.mImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.mic_shape));
         LayoutParams layoutParamImage = new LayoutParams(
                 DEFAULT_ICON_SIZE,
                 DEFAULT_ICON_SIZE);
@@ -251,7 +252,7 @@ public class AudioRecordButton extends RelativeLayout {
                 DEFAULT_REMOVE_ICON_SIZE,
                 DEFAULT_REMOVE_ICON_SIZE
         );
-        layoutParamImageButton.setMargins(0, 0, 4, 0);
+//        layoutParamImageButton.setMargins(0, 0, 0, 0);
         layoutParamImageButton.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
 
         this.mLayoutVoice.addView(this.mImageButton, layoutParamImageButton);
@@ -284,6 +285,7 @@ public class AudioRecordButton extends RelativeLayout {
         this.mImageButton.getLayoutParams().width = this.mImageView.getWidth();
         this.mImageButton.getLayoutParams().height = this.mImageView.getHeight();
         this.mImageButton.requestLayout();
+        this.mImageButton.setX(0);
     }
 
     public void unRevealSizeToRemove() {
