@@ -1,23 +1,37 @@
+![](https://jitpack.io/v/safetysystemtechnology/audio-recorder-button.svg)
+
 # Safety Audio Recorder Button
 Simple audio recorder component for android
+
+## Demo
+<p align="center">
+  <img src="etc/audio-button.gif" height="500" alt="progress image view" />
+</p>
 
 
 ### Add permissions in your androidmanifest.xml
 ```xml
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 ```
 
 ## Install
 Add the dependecy
 
 ```gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
 
+dependencies {
+    compile 'com.github.safetysystemtechnology:audio-recorder-button:v1.2'
+}
 
 ```
-
-
 ## Usage
 
 ### XML
@@ -29,8 +43,15 @@ Add the dependecy
   android:layout_width="150dp"
   android:layout_height="80dp" />
 </br.com.safety.audio_recorder.AudioRecordButton>
-
 ```
+### Configure XML
+
+* recorder_image_size: size to image micro voice
+* remove_image_size: size to image cancel audio
+* recorder_image: drawable to image voice
+* remove_image: drawable to image voice
+* remove_position: left or right (Todo)
+
 ### Java
 
 ```java
