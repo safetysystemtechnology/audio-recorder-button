@@ -10,9 +10,7 @@
         android:id="@+id/audio_record_button"
         android:layout_centerInParent="true"
         android:layout_width="150dp"
-        android:layout_height="80dp"
-        app:remove_image="@drawable/ic_android"
-        app:remove_image_size="20dp">
+        android:layout_height="90dp">
     </br.com.safety.audio_recorder.AudioRecordButton>
 
 

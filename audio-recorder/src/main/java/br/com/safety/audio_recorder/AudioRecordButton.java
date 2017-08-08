@@ -83,15 +83,16 @@ public class AudioRecordButton extends RelativeLayout {
             case MotionEvent.ACTION_DOWN:
                 initialTouchX = event.getRawX();
 
+                if (this.initialX == 0) {
+                    this.initialX = this.mImageView.getX();
+                }
+
                 changeImageView();
                 mLayoutTimer.setVisibility(VISIBLE);
                 mImageButton.setVisibility(VISIBLE);
                 startRecord();
                 return true;
             case MotionEvent.ACTION_MOVE:
-                if (this.initialX == 0) {
-                    this.initialX = this.mImageView.getX() - 10;
-                }
 
                 this.mImageView.setX(event.getX() - this.mImageView.getWidth() / 2);
 
@@ -106,8 +107,8 @@ public class AudioRecordButton extends RelativeLayout {
                     this.mImageButton.setX(0);
                 }
 
-                if (this.mImageView.getX() + this.mImageView.getWidth() / 2 > getWidth() / 2) {
-                    this.mImageView.setX(this.initialX + 10);
+                if (this.mImageView.getX() > this.initialX) {
+                    this.mImageView.setX(this.initialX);
                 }
 
                 break;
@@ -194,7 +195,6 @@ public class AudioRecordButton extends RelativeLayout {
         /**
          *  Component Attributes
          */
-
         if (attrs != null && defStyleAttr == -1 && defStyleRes == -1) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AudioButton,
                     defStyleAttr, defStyleRes);
@@ -204,16 +204,12 @@ public class AudioRecordButton extends RelativeLayout {
             recorderImageHeight = (int) typedArray.getDimension(R.styleable.AudioButton_recorder_image_size,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
-
             removeImageWidth = (int) typedArray.getDimension(R.styleable.AudioButton_remove_image_size,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             removeImageHeight = (int) typedArray.getDimension(R.styleable.AudioButton_remove_image_size,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
-
-
             drawableMicVoice = typedArray.getDrawable(R.styleable.AudioButton_recorder_image);
-
             drawableRemoveButton = typedArray.getDrawable(R.styleable.AudioButton_remove_image);
         }
 
@@ -245,7 +241,6 @@ public class AudioRecordButton extends RelativeLayout {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParamsChronometer.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-
         mLayoutTimer.addView(this.mChronometer, layoutParamsChronometer);
 
         /**
@@ -256,17 +251,13 @@ public class AudioRecordButton extends RelativeLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         );
-
         layoutVoiceParams.addRule(RelativeLayout.BELOW, 9 + 1);
-
         addView(this.mLayoutVoice, layoutVoiceParams);
 
         /**
          * Image voice
          */
         this.mImageView = new ImageView(context);
-//        this.mImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_fileviewer));
-
         this.mImageView.setBackground(drawableMicVoice != null ? drawableMicVoice : ContextCompat.getDrawable(context, R.drawable.mic_shape));
         LayoutParams layoutParamImage = new LayoutParams(
                 recorderImageWidth > 0 ? recorderImageWidth : DEFAULT_ICON_SIZE,
@@ -284,15 +275,10 @@ public class AudioRecordButton extends RelativeLayout {
         this.mImageButton.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_circle));
         this.mImageButton.setColorFilter(Color.WHITE);
 
-
-        Log.v("O VALOR ", String.valueOf(removeImageHeight));
-        Log.v("O VALOR 2 ", String.valueOf(DEFAULT_REMOVE_ICON_SIZE));
-
         RelativeLayout.LayoutParams layoutParamImageButton = new RelativeLayout.LayoutParams(
                 ((removeImageWidth > 0) && (removeImageWidth < DEFAULT_REMOVE_ICON_SIZE)) ? removeImageWidth : DEFAULT_REMOVE_ICON_SIZE,
                 ((removeImageHeight > 0) && (removeImageHeight < DEFAULT_REMOVE_ICON_SIZE)) ? removeImageHeight : DEFAULT_REMOVE_ICON_SIZE
         );
-//        layoutParamImageButton.setMargins(0, 0, 0, 0);
         layoutParamImageButton.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
 
         this.mLayoutVoice.addView(this.mImageButton, layoutParamImageButton);
