@@ -12,7 +12,7 @@
         android:layout_width="150dp"
         android:layout_height="80dp"
         app:remove_image="@drawable/ic_android"
-        app:remove_image_size="50dp">
+        app:remove_image_size="20dp">
     </br.com.safety.audio_recorder.AudioRecordButton>
 
 
