@@ -8,10 +8,10 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -25,8 +25,8 @@ import java.util.UUID;
 
 public class AudioRecordButton extends RelativeLayout {
 
-    private static int DEFAULT_ICON_SIZE = 90;
-    private static int DEFAULT_REMOVE_ICON_SIZE = 50;
+    private static final int DEFAULT_ICON_SIZE = 90;
+    private static final int DEFAULT_REMOVE_ICON_SIZE = 50;
 
     private Context mContext;
     private RelativeLayout mLayoutTimer;
@@ -48,6 +48,7 @@ public class AudioRecordButton extends RelativeLayout {
     private int removeImageHeight = 0;
     private Drawable drawableMicVoice;
     private Drawable drawableRemoveButton;
+
 
     private WindowManager.LayoutParams params;
 
@@ -82,12 +83,12 @@ public class AudioRecordButton extends RelativeLayout {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 initialTouchX = event.getRawX();
+                changeImageView();
 
                 if (this.initialX == 0) {
                     this.initialX = this.mImageView.getX();
                 }
 
-                changeImageView();
                 mLayoutTimer.setVisibility(VISIBLE);
                 mImageButton.setVisibility(VISIBLE);
                 startRecord();
@@ -114,7 +115,7 @@ public class AudioRecordButton extends RelativeLayout {
                 break;
             case MotionEvent.ACTION_UP:
                 moveImageToBack();
-                unRevealImageView();
+
                 mLayoutTimer.setVisibility(INVISIBLE);
                 mImageButton.setVisibility(INVISIBLE);
 
@@ -178,9 +179,16 @@ public class AudioRecordButton extends RelativeLayout {
         }
     }
 
-    private void stopRecord(Boolean cancel) {
+    private void stopRecord(final Boolean cancel) {
         if (mAudioListener != null) {
-            this.mAudioRecording.stop(cancel);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAudioRecording.stop(cancel);
+                    unRevealImageView();
+                }
+            }, 300);
         }
     }
 
