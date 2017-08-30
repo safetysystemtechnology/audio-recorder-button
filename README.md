@@ -28,7 +28,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.safetysystemtechnology:audio-recorder-button:v1.2'
+    compile 'com.github.safetysystemtechnology:audio-recorder-button:v1.3'
 }
 
 ```
