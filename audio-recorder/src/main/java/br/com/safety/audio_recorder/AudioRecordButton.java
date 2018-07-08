@@ -25,8 +25,8 @@ import java.util.UUID;
 
 public class AudioRecordButton extends RelativeLayout {
 
-    private static final int DEFAULT_ICON_SIZE = 90;
-    private static final int DEFAULT_REMOVE_ICON_SIZE = 50;
+    private final int DEFAULT_ICON_SIZE = Math.round(getResources().getDimension(R.dimen.default_icon_size));
+    private final int DEFAULT_REMOVE_ICON_SIZE =  Math.round(getResources().getDimension(R.dimen.default_icon_remove_size));
 
     private Context mContext;
     private RelativeLayout mLayoutTimer;
@@ -235,7 +235,8 @@ public class AudioRecordButton extends RelativeLayout {
 
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-
+        Integer margin = Math.round(getResources().getDimension(R.dimen.chronometer_margin));
+        layoutParams.setMargins(margin, margin, margin, margin);
         addView(mLayoutTimer, layoutParams);
 
         /**
@@ -257,7 +258,7 @@ public class AudioRecordButton extends RelativeLayout {
         mLayoutVoice = new RelativeLayout(context);
         RelativeLayout.LayoutParams layoutVoiceParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
         layoutVoiceParams.addRule(RelativeLayout.BELOW, 9 + 1);
         addView(this.mLayoutVoice, layoutVoiceParams);
