@@ -231,7 +231,7 @@ public class AudioRecordButton extends RelativeLayout {
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                35);
+                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
