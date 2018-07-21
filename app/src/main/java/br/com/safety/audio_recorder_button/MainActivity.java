@@ -21,12 +21,15 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class MainActivity extends AppCompatActivity {
 
     private AudioRecordButton mAudioRecordButton;
+    private AudioRecording audioRecording;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        audioRecording = new AudioRecording(getBaseContext());
 
         initView();
 
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStop(RecordingItem recordingItem) {
                 Toast.makeText(getBaseContext(), "Audio..", Toast.LENGTH_SHORT).show();
-                new AudioRecording(getBaseContext()).play(recordingItem);
+                audioRecording.play(recordingItem);
             }
 
             @Override

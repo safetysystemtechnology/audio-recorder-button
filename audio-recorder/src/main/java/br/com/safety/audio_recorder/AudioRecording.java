@@ -3,6 +3,8 @@ package br.com.safety.audio_recorder;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -20,10 +22,12 @@ public class AudioRecording {
     private long mElapsedMillis = 0;
 
     public AudioRecording(Context context) {
+        mRecorder = new MediaRecorder();
         this.mContext = context;
     }
 
     public AudioRecording() {
+        mRecorder = new MediaRecorder();
     }
 
     public AudioRecording setNameFile(String nameFile) {
@@ -34,13 +38,15 @@ public class AudioRecording {
     public AudioRecording start(AudioListener audioListener) {
         this.audioListener = audioListener;
 
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setOutputFile(mContext.getCacheDir() + mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
         try {
+
+            mRecorder.reset();
+
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mRecorder.setOutputFile(mContext.getCacheDir() + mFileName);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
             mRecorder.prepare();
             mRecorder.start();
             mStartingTimeMillis = System.currentTimeMillis();
@@ -51,10 +57,13 @@ public class AudioRecording {
     }
 
     public void stop(Boolean cancel) {
-        mRecorder.stop();
+        try {
+            mRecorder.stop();
+        } catch (RuntimeException e) {
+            deleteOutput();
+        }
         mRecorder.release();
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-        mRecorder = null;
 
         RecordingItem recordingItem = new RecordingItem();
         recordingItem.setFilePath(mContext.getCacheDir() + mFileName);
@@ -66,6 +75,13 @@ public class AudioRecording {
             audioListener.onStop(recordingItem);
         } else {
             audioListener.onCancel();
+        }
+    }
+
+    private void deleteOutput() {
+        File file = new File(mContext.getCacheDir() + mFileName);
+        if (file.exists()) {
+            file.delete();
         }
     }
 
