@@ -48,6 +48,8 @@ public class AudioRecordButton extends RelativeLayout {
     private int removeImageHeight = 0;
     private Drawable drawableMicVoice;
     private Drawable drawableRemoveButton;
+    private boolean isPlaying = false;
+    private boolean isPausing = false;
 
 
     private WindowManager.LayoutParams params;
@@ -82,49 +84,58 @@ public class AudioRecordButton extends RelativeLayout {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                initialTouchX = event.getRawX();
-                changeImageView();
+                if (!isPlaying && !isPausing) {
+                    isPlaying = true;
+                    initialTouchX = event.getRawX();
+                    changeImageView();
 
-                if (this.initialX == 0) {
-                    this.initialX = this.mImageView.getX();
+                    if (this.initialX == 0) {
+                        this.initialX = this.mImageView.getX();
+                    }
+
+                    mLayoutTimer.setVisibility(VISIBLE);
+                    mImageButton.setVisibility(VISIBLE);
+                    startRecord();
+                    return true;
                 }
-
-                mLayoutTimer.setVisibility(VISIBLE);
-                mImageButton.setVisibility(VISIBLE);
-                startRecord();
-                return true;
+                break;
             case MotionEvent.ACTION_MOVE:
 
-                this.mImageView.setX(event.getX() - this.mImageView.getWidth() / 2);
+                if (isPlaying && !isPausing) {
 
-                if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 20) {
-                    this.mImageView.setX(0);
-                    this.changeSizeToRemove();
-                } else if (this.mImageView.getX() > DEFAULT_REMOVE_ICON_SIZE + DEFAULT_REMOVE_ICON_SIZE / 2) {
-                    this.unRevealSizeToRemove();
-                }
+                    this.mImageView.setX(event.getX() - this.mImageView.getWidth() / 2);
 
-                if (this.mImageView.getX() <= 0) {
-                    this.mImageButton.setX(0);
-                }
+                    if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 20) {
+                        this.mImageView.setX(0);
+                        this.changeSizeToRemove();
+                    } else if (this.mImageView.getX() > DEFAULT_REMOVE_ICON_SIZE + DEFAULT_REMOVE_ICON_SIZE / 2) {
+                        this.unRevealSizeToRemove();
+                    }
 
-                if (this.mImageView.getX() > this.initialX) {
-                    this.mImageView.setX(this.initialX);
+                    if (this.mImageView.getX() <= 0) {
+                        this.mImageButton.setX(0);
+                    }
+
+                    if (this.mImageView.getX() > this.initialX) {
+                        this.mImageView.setX(this.initialX);
+                    }
                 }
 
                 break;
             case MotionEvent.ACTION_UP:
-                moveImageToBack();
+                if (isPlaying && !isPausing) {
+                    isPausing = true;
+                    moveImageToBack();
 
-                mLayoutTimer.setVisibility(INVISIBLE);
-                mImageButton.setVisibility(INVISIBLE);
+                    mLayoutTimer.setVisibility(INVISIBLE);
+                    mImageButton.setVisibility(INVISIBLE);
 
-                if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 10) {
-                    stopRecord(true);
-                } else {
-                    stopRecord(false);
+                    if (this.mImageView.getX() < DEFAULT_REMOVE_ICON_SIZE - 10) {
+                        stopRecord(true);
+                    } else {
+                        stopRecord(false);
+                    }
                 }
-
                 break;
             default:
                 return false;
@@ -187,6 +198,8 @@ public class AudioRecordButton extends RelativeLayout {
                 public void run() {
                     mAudioRecording.stop(cancel);
                     unRevealImageView();
+                    isPlaying = false;
+                    isPausing = false;
                 }
             }, 300);
         }
@@ -307,21 +320,19 @@ public class AudioRecordButton extends RelativeLayout {
 
         this.mChronometer.setBase(SystemClock.elapsedRealtime());
         this.mChronometer.start();
-
-        this.getLayoutParams().width = this.getWidth() + 30;
-        this.getLayoutParams().height = this.getHeight() + 30;
+        
+        this.mImageView.setScaleX(0.8f);
+        this.mImageView.setScaleY(0.8f);
         this.requestLayout();
-
-        this.mImageView.getLayoutParams().width = this.mImageView.getWidth() + 30;
-        this.mImageView.getLayoutParams().height = this.mImageView.getHeight() + 30;
-        this.mImageView.requestLayout();
     }
 
     public void changeSizeToRemove() {
-        this.mImageButton.getLayoutParams().width = this.mImageView.getWidth();
-        this.mImageButton.getLayoutParams().height = this.mImageView.getHeight();
-        this.mImageButton.requestLayout();
-        this.mImageButton.setX(0);
+        if (this.mImageButton.getLayoutParams().width != this.mImageView.getWidth()) {
+            this.mImageButton.getLayoutParams().width = this.mImageView.getWidth();
+            this.mImageButton.getLayoutParams().height = this.mImageView.getHeight();
+            this.mImageButton.requestLayout();
+            this.mImageButton.setX(0);
+        }
     }
 
     public void unRevealSizeToRemove() {
@@ -333,13 +344,9 @@ public class AudioRecordButton extends RelativeLayout {
     public void unRevealImageView() {
         this.mChronometer.stop();
 
-        this.getLayoutParams().width = this.getWidth() - 30;
-        this.getLayoutParams().height = this.getHeight() - 30;
+        this.mImageView.setScaleX(1f);
+        this.mImageView.setScaleY(1f);
         this.requestLayout();
-
-        this.mImageView.getLayoutParams().width = this.mImageView.getWidth() - 30;
-        this.mImageView.getLayoutParams().height = this.mImageView.getHeight() - 30;
-        this.mImageView.requestLayout();
     }
 
 }
