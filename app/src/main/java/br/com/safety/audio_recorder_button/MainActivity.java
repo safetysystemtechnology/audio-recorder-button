@@ -2,12 +2,13 @@ package br.com.safety.audio_recorder_button;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import br.com.safety.audio_recorder.AudioListener;
 import br.com.safety.audio_recorder.AudioRecordButton;

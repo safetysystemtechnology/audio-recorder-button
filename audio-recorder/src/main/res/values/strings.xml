@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">audio-recorder</string>
-    <item name="layoutCron" type="id">1</item>
+    <item name="layoutCron" type="id"/>
 </resources>
