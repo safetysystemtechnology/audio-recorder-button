@@ -42,7 +42,6 @@ dependencies {
   android:layout_centerInParent="true"
   android:layout_width="150dp"
   android:layout_height="80dp" />
-</br.com.safety.audio_recorder.AudioRecordButton>
 ```
 ### Configure XML
 
