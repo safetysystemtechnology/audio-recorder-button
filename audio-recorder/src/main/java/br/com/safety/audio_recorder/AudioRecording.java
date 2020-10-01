@@ -85,6 +85,15 @@ public class AudioRecording {
         }
     }
 
+    public void stopRecording(int time) {
+    // This method can apply timer limit for recording
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+            stop(false);
+            }
+        }, time);
+    }
+    
     public void play(RecordingItem recordingItem) {
         try {
             this.mMediaPlayer = new MediaPlayer();

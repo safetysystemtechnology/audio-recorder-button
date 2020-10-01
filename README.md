@@ -82,6 +82,13 @@ audioRecordButton.setOnAudioListener(new AudioListener() {
         });
 ```
 
+Stop audio Recording after specific time
+
+```
+// After Initilizing audio recorder, this can stop recording after 1 min.
+StopRecording(60000);
+```
+
 If you prefer to execute the sound after the audio capture, just call the `play()` method inside `onStop()`
 
 ```java
