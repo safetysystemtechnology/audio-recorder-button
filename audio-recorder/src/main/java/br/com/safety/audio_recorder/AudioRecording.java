@@ -41,7 +41,6 @@ public class AudioRecording {
         try {
 
             mRecorder.reset();
-
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             mRecorder.setOutputFile(mContext.getCacheDir() + mFileName);
@@ -97,8 +96,9 @@ public class AudioRecording {
         }
     }
 
-    public void stop(RecordingItem recordingItem){
-        audioListener.onStop(recordingItem);
+    public void stopAudio(RecordingItem recordingItem){
+        this.mMediaPlayer.stop();
+//        audioListener.onStop(recordingItem);
 
     }
 
