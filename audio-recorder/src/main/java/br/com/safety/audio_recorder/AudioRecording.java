@@ -14,6 +14,7 @@ public class AudioRecording {
 
     private String mFileName;
     private Context mContext;
+    public int sessionId = 0;
 
     private MediaPlayer mMediaPlayer;
     private AudioListener audioListener;
@@ -89,7 +90,11 @@ public class AudioRecording {
             this.mMediaPlayer = new MediaPlayer();
             this.mMediaPlayer.setDataSource(recordingItem.getFilePath());
             this.mMediaPlayer.prepare();
+            this.mMediaPlayer.getAudioSessionId();
+            sessionId =
+                    this.mMediaPlayer.getAudioSessionId();
             this.mMediaPlayer.start();
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,12 +107,5 @@ public class AudioRecording {
 
     }
 
-    public void channelId(RecordingItem recordingItem){
-        this.mMediaPlayer.getAudioSessionId();
 
-    }
-
-    public void resume(RecordingItem recordingItem){
-
-    }
 }

@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,8 +23,10 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String session = "";
     private AudioRecordButton mAudioRecordButton;
     private AudioRecording audioRecording;
+    private Button stopBtn;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -40,10 +44,21 @@ public class MainActivity extends AppCompatActivity {
 
         this.mAudioRecordButton.setOnAudioListener(new AudioListener() {
             @Override
-            public void onStop(RecordingItem recordingItem) {
+            public void onStop(final RecordingItem recordingItem) {
                 Toast.makeText(getBaseContext(), "Audio..", Toast.LENGTH_SHORT).show();
                 audioRecording.play(recordingItem);
+
+                stopBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        audioRecording.stopAudio(recordingItem);
+                    }
+                });
+
+                session = String.valueOf(audioRecording.sessionId);
+                Toast.makeText(MainActivity.this, session, Toast.LENGTH_SHORT).show();
             }
+
 
             @Override
             public void onCancel() {
@@ -59,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         this.mAudioRecordButton = (AudioRecordButton) findViewById(R.id.audio_record_button);
+        this.stopBtn = (Button) findViewById(R.id.stop);
     }
 
 
