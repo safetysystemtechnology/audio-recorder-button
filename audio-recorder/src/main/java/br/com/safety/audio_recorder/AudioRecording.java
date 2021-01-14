@@ -97,4 +97,12 @@ public class AudioRecording {
         }
     }
 
+    public void pause(RecordingItem recordingItem){
+        this.mMediaPlayer.pause();
+
+    }
+
+    public void channelId(RecordingItem recordingItem){
+        this.mMediaPlayer.getAudioSessionId();
+    }
 }
