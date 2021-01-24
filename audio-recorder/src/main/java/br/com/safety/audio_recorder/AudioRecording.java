@@ -14,6 +14,8 @@ public class AudioRecording {
 
     private String mFileName;
     private Context mContext;
+    public int sessionId = 0;
+    private boolean isPlaying = false;
 
     private MediaPlayer mMediaPlayer;
     private AudioListener audioListener;
@@ -41,7 +43,6 @@ public class AudioRecording {
         try {
 
             mRecorder.reset();
-
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             mRecorder.setOutputFile(mContext.getCacheDir() + mFileName);
@@ -90,11 +91,38 @@ public class AudioRecording {
             this.mMediaPlayer = new MediaPlayer();
             this.mMediaPlayer.setDataSource(recordingItem.getFilePath());
             this.mMediaPlayer.prepare();
+            this.mMediaPlayer.getAudioSessionId();
+            sessionId =
+                    this.mMediaPlayer.getAudioSessionId();
             this.mMediaPlayer.start();
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public MediaPlayer sendInstance(){
+        if (this.mMediaPlayer != null){
+            return this.mMediaPlayer;
+        }
+        return null;
+    }
+
+    public void stopAudio(RecordingItem recordingItem){
+
+        if (this.mMediaPlayer.isPlaying()){
+
+        this.mMediaPlayer.stop();
+            isPlaying = false;
+        }else
+        {
+            isPlaying = true;
+        }
+
+//        audioListener.onStop(recordingItem);
+
+    }
+
 
 }

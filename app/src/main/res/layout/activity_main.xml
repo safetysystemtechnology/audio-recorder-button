@@ -13,5 +13,13 @@
         android:layout_height="wrap_content">
     </br.com.safety.audio_recorder.AudioRecordButton>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_below="@id/audio_record_button"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/stop"
+        android:text="stop"/>
+
 
 </RelativeLayout>
