@@ -15,6 +15,7 @@ public class AudioRecording {
     private String mFileName;
     private Context mContext;
     public int sessionId = 0;
+    private boolean isPlaying = false;
 
     private MediaPlayer mMediaPlayer;
     private AudioListener audioListener;
@@ -101,8 +102,24 @@ public class AudioRecording {
         }
     }
 
+    public MediaPlayer sendInstance(){
+        if (this.mMediaPlayer != null){
+            return this.mMediaPlayer;
+        }
+        return null;
+    }
+
     public void stopAudio(RecordingItem recordingItem){
+
+        if (this.mMediaPlayer.isPlaying()){
+
         this.mMediaPlayer.stop();
+            isPlaying = false;
+        }else
+        {
+            isPlaying = true;
+        }
+
 //        audioListener.onStop(recordingItem);
 
     }
